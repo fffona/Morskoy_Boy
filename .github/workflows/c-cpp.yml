@@ -23,3 +23,58 @@ void morskoy_boi(int massiv, int massiv_txt) {
 
     }
 }
+
+
+void morskoy_boi(int massiv[10][10], char massiv_txt[10][10]) {
+    int a, b;
+    cout << "Введите координаты вашего хода (формат: x,y): ";
+    cin >> a >> b;
+
+    if (a < 0 || a >= 10 || b < 0 || b >= 10) {
+        cout << "Некорректные координаты!" << endl;
+        return;
+    }
+
+    if (massiv_txt[a][b] != 'k') {
+        cout << "Промах!" << endl;
+        return;
+    }
+
+    // При попадании проверяем размер корабля
+    int shipSize = 1; // По умолчанию размер корабля - 1 клетка
+
+    // Проверяем соседние клетки, чтобы определить размер корабля
+    // Этот код предполагает, что корабль не имеет "дырок" и находится в одной линии
+    if (a + 1 < 10 && massiv_txt[a + 1][b] == 'k') {
+        shipSize++;
+    }
+    if (a - 1 >= 0 && massiv_txt[a - 1][b] == 'k') {
+        shipSize++;
+    }
+    if (b + 1 < 10 && massiv_txt[a][b + 1] == 'k') {
+        shipSize++;
+    }
+    if (b - 1 >= 0 && massiv_txt[a][b - 1] == 'k') {
+        shipSize++;
+    }
+
+    // Помечаем клетки корабля на игровом поле
+    cout << "Попадание! Размер корабля: " << shipSize << endl;
+    massiv[a][b] = 'U'; // Помечаем попадание
+
+    // Если корабль состоит более чем из одной клетки, помечаем остальные клетки
+    if (shipSize > 1) {
+        if (a + 1 < 10 && massiv_txt[a + 1][b] == 'k') {
+            massiv[a + 1][b] = 'U';
+        }
+        if (a - 1 >= 0 && massiv_txt[a - 1][b] == 'k') {
+            massiv[a - 1][b] = 'U';
+        }
+        if (b + 1 < 10 && massiv_txt[a][b + 1] == 'k') {
+            massiv[a][b + 1] = 'U';
+        }
+        if (b - 1 >= 0 && massiv_txt[a][b - 1] == 'k') {
+            massiv[a][b - 1] = 'U';
+        }
+    }
+}
