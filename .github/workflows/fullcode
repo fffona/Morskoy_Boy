@@ -18,13 +18,7 @@ void editFile(const std::string& fileName) {
     std::system(cmd.c_str()); // Открываем файл в текстовом редакторе
 }
 
-void loadBoardFromFile(const std::string& fileName, std::vector<std::vector<char>>& board) {
-    std::ifstream file(fileName);
-    if (!file.is_open()) {
-        std::cerr << "Ошибка открытия файла " << fileName << std::endl;
-        return;
-    }
-
+void loadBoardFromFile(std::ifstream& file, std::vector<std::vector<char>>& board) {
     const int boardSize = board.size();
 
     for (int i = 0; i < boardSize; ++i) {
@@ -32,8 +26,43 @@ void loadBoardFromFile(const std::string& fileName, std::vector<std::vector<char
             file >> board[i][j];
         }
     }
+}
 
-    file.close();
+int main() {
+    setlocale(LC_ALL, "Russian");
+    const std::string player1FileName = "player1_board.txt";
+    const std::string player2FileName = "player2_board.txt";
+
+    // Открываем файлы в текстовом редакторе для редактирования игрового поля
+    std::cout << "Игрок 1, отредактируйте ваше игровое поле в файле 'player1_board.txt'. Нажмите Enter после завершения редактирования...";
+    editFile(player1FileName);
+    std::cout << "Игрок 2, отредактируйте ваше игровое поле в файле 'player2_board.txt'. Нажмите Enter после завершения редактирования...";
+    editFile(player2FileName);
+
+    // Считываем отредактированные игровые поля из файлов
+    std::ifstream player1File(player1FileName);
+    std::ifstream player2File(player2FileName);
+
+    if (!player1File.is_open() || !player2File.is_open()) {
+        std::cerr << "Ошибка открытия файла" << std::endl;
+        return 1;
+    }
+
+    const int boardSize = 10;
+    std::vector<std::vector<char>> player1Board(boardSize, std::vector<char>(boardSize));
+    std::vector<std::vector<char>> player2Board(boardSize, std::vector<char>(boardSize));
+
+    loadBoardFromFile(player1File, player1Board);
+    loadBoardFromFile(player2File, player2Board);
+
+    player1File.close();
+    player2File.close();
+
+    std::cout << "Игровые поля загружены из файлов 'player1_board.txt' и 'player2_board.txt'.\n";
+
+    // Дальнейшая логика игры...
+
+    return 0;
 }
 
 void morskoy_boi(int massiv[10][10], char massiv_txt[10][10]) {
@@ -51,8 +80,11 @@ void morskoy_boi(int massiv[10][10], char massiv_txt[10][10]) {
         return;
     }
 
-    int shipSize = 1;
+    // При попадании проверяем размер корабля
+    int shipSize = 1; // По умолчанию размер корабля - 1 клетка
 
+    // Проверяем соседние клетки, чтобы определить размер корабля
+    // Этот код предполагает, что корабль не имеет "дырок" и находится в одной линии
     if (a + 1 < 10 && massiv_txt[a + 1][b] == 'k') {
         shipSize++;
     }
@@ -66,9 +98,11 @@ void morskoy_boi(int massiv[10][10], char massiv_txt[10][10]) {
         shipSize++;
     }
 
+    // Помечаем клетки корабля на игровом поле
     std::cout << "Попадание! Размер корабля: " << shipSize << std::endl;
-    massiv[a][b] = 'U';
+    massiv[a][b] = 'U'; // Помечаем попадание
 
+    // Если корабль состоит более чем из одной клетки, помечаем остальные клетки
     if (shipSize > 1) {
         if (a + 1 < 10 && massiv_txt[a + 1][b] == 'k') {
             massiv[a + 1][b] = 'U';
@@ -84,34 +118,3 @@ void morskoy_boi(int massiv[10][10], char massiv_txt[10][10]) {
         }
     }
 }
-
-int main() {
-    setlocale(LC_ALL, "Russian");
-    const std::string player1FileName = "player1_board.txt";
-    const std::string player2FileName = "player2_board.txt";
-
-    std::cout << "Игрок 1, отредактируйте ваше игровое поле в файле 'player1_board.txt'. Нажмите Enter после завершения редактирования...";
-    editFile(player1FileName);
-    std::cout << "Игрок 2, отредактируйте ваше игровое поле в файле 'player2_board.txt'. Нажмите Enter после завершения редактирования...";
-    editFile(player2FileName);
-
-    std::vector<std::vector<char>> player1Board(10, std::vector<char>(10));
-    std::vector<std::vector<char>> player2Board(10, std::vector<char>(10));
-
-    loadBoardFromFile(player1FileName, player1Board);
-    loadBoardFromFile(player2FileName, player2Board);
-
-    std::cout << "Игровые поля загружены из файлов 'player1_board.txt' и 'player2_board.txt'.\n";
-
-    // Пример использования функции morskoy_boi() для игрока 1
-    std::cout << "Ход игрока 1:" << std::endl;
-    morskoy_boi(/*передайте массивы игрового поля player2Board и его текстового представления*/);
-
-    // Пример отображения обновленного игрового поля
-    displayBoard(/*передайте player2Board*/);
-
-    // Дальнейшая логика игры...
-
-    return 0;
-}
-
