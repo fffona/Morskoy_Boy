@@ -1,0 +1,25 @@
+void morskoy_boi(int massiv, int massiv_txt) {
+    // число игроков
+    int n = 2;
+    // координаты хода игрока
+    int a1, b1;
+    int* a(&a1);
+    int* b(&b1);
+    // точка с запятой между координатами
+    char ch;
+    // ввод координат с клавиатуры
+    cout << "Игрок " << n - 1 << ", ваш ход: (";
+    cin >> a1 >> ch >> b1;
+    if (to_string(massiv_txt[a][b]) == "k") {
+        if (to_string(massiv_txt[a + 1][b]) != "k")
+            if (to_string(massiv_txt[a + 1][b + 1]) != "k")
+                if (to_string(massiv_txt[a][b + 1]) != "k")
+                    if (to_string(massiv_txt[a - 1][b]) != "k")
+                        if (to_string(massiv_txt[a - 1][b - 1]) != "k")
+                            if (to_string(massiv_txt[a][b - 1]) != "k")
+                                if (to_string(massiv_txt[a - 1][b + 1]) != "k")
+                                    if (to_string(massiv_txt[a + 1][b - 1]) != "k")
+                                        massiv[a][b] == U;
+
+    }
+}
