@@ -1,1 +1,117 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cstdlib> // Для вызова системной команды
+
+void displayBoard(const std::vector<std::vector<char>>& board) {
+    for (const auto& row : board) {
+        for (char cell : row) {
+            std::cout << cell << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void editFile(const std::string& fileName) {
+    std::string cmd = "notepad " + fileName; // Используем notepad для открытия файла
+    std::system(cmd.c_str()); // Открываем файл в текстовом редакторе
+}
+
+void loadBoardFromFile(const std::string& fileName, std::vector<std::vector<char>>& board) {
+    std::ifstream file(fileName);
+    if (!file.is_open()) {
+        std::cerr << "Ошибка открытия файла " << fileName << std::endl;
+        return;
+    }
+
+    const int boardSize = board.size();
+
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            file >> board[i][j];
+        }
+    }
+
+    file.close();
+}
+
+void morskoy_boi(int massiv[10][10], char massiv_txt[10][10]) {
+    int a, b;
+    std::cout << "Введите координаты вашего хода (формат: x,y): ";
+    std::cin >> a >> b;
+
+    if (a < 0 || a >= 10 || b < 0 || b >= 10) {
+        std::cout << "Некорректные координаты!" << std::endl;
+        return;
+    }
+
+    if (massiv_txt[a][b] != 'k') {
+        std::cout << "Промах!" << std::endl;
+        return;
+    }
+
+    int shipSize = 1;
+
+    if (a + 1 < 10 && massiv_txt[a + 1][b] == 'k') {
+        shipSize++;
+    }
+    if (a - 1 >= 0 && massiv_txt[a - 1][b] == 'k') {
+        shipSize++;
+    }
+    if (b + 1 < 10 && massiv_txt[a][b + 1] == 'k') {
+        shipSize++;
+    }
+    if (b - 1 >= 0 && massiv_txt[a][b - 1] == 'k') {
+        shipSize++;
+    }
+
+    std::cout << "Попадание! Размер корабля: " << shipSize << std::endl;
+    massiv[a][b] = 'U';
+
+    if (shipSize > 1) {
+        if (a + 1 < 10 && massiv_txt[a + 1][b] == 'k') {
+            massiv[a + 1][b] = 'U';
+        }
+        if (a - 1 >= 0 && massiv_txt[a - 1][b] == 'k') {
+            massiv[a - 1][b] = 'U';
+        }
+        if (b + 1 < 10 && massiv_txt[a][b + 1] == 'k') {
+            massiv[a][b + 1] = 'U';
+        }
+        if (b - 1 >= 0 && massiv_txt[a][b - 1] == 'k') {
+            massiv[a][b - 1] = 'U';
+        }
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    const std::string player1FileName = "player1_board.txt";
+    const std::string player2FileName = "player2_board.txt";
+
+    std::cout << "Игрок 1, отредактируйте ваше игровое поле в файле 'player1_board.txt'. Нажмите Enter после завершения редактирования...";
+    editFile(player1FileName);
+    std::cout << "Игрок 2, отредактируйте ваше игровое поле в файле 'player2_board.txt'. Нажмите Enter после завершения редактирования...";
+    editFile(player2FileName);
+
+    std::vector<std::vector<char>> player1Board(10, std::vector<char>(10));
+    std::vector<std::vector<char>> player2Board(10, std::vector<char>(10));
+
+    loadBoardFromFile(player1FileName, player1Board);
+    loadBoardFromFile(player2FileName, player2Board);
+
+    std::cout << "Игровые поля загружены из файлов 'player1_board.txt' и 'player2_board.txt'.\n";
+
+    // Пример использования функции morskoy_boi() для игрока 1
+    std::cout << "Ход игрока 1:" << std::endl;
+    morskoy_boi(/*передайте массивы игрового поля player2Board и его текстового представления*/);
+
+    // Пример отображения обновленного игрового поля
+    displayBoard(/*передайте player2Board*/);
+
+    // Дальнейшая логика игры...
+
+    return 0;
+}
 
