@@ -1,0 +1,66 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <cstdlib> // Для вызова системной команды
+
+void displayBoard(const std::vector<std::vector<char>>& board) {
+    for (const auto& row : board) {
+        for (char cell : row) {
+            std::cout << cell << " ";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << std::endl;
+}
+
+void editFile(const std::string& fileName) {
+    std::string cmd = "notepad " + fileName; // Используем notepad для открытия файла
+    std::system(cmd.c_str()); // Открываем файл в текстовом редакторе
+}
+
+void loadBoardFromFile(std::ifstream& file, std::vector<std::vector<char>>& board) {
+    const int boardSize = board.size();
+
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            file >> board[i][j];
+        }
+    }
+}
+
+int main() {
+    setlocale(LC_ALL, "Russian");
+    const std::string player1FileName = "player1_board.txt";
+    const std::string player2FileName = "player2_board.txt";
+
+    // Открываем файлы в текстовом редакторе для редактирования игрового поля
+    std::cout << "Игрок 1, отредактируйте ваше игровое поле в файле 'player1_board.txt'. Нажмите Enter после завершения редактирования...";
+    editFile(player1FileName);
+    std::cout << "Игрок 2, отредактируйте ваше игровое поле в файле 'player2_board.txt'. Нажмите Enter после завершения редактирования...";
+    editFile(player2FileName);
+
+    // Считываем отредактированные игровые поля из файлов
+    std::ifstream player1File(player1FileName);
+    std::ifstream player2File(player2FileName);
+
+    if (!player1File.is_open() || !player2File.is_open()) {
+        std::cerr << "Ошибка открытия файла" << std::endl;
+        return 1;
+    }
+
+    const int boardSize = 10;
+    std::vector<std::vector<char>> player1Board(boardSize, std::vector<char>(boardSize));
+    std::vector<std::vector<char>> player2Board(boardSize, std::vector<char>(boardSize));
+
+    loadBoardFromFile(player1File, player1Board);
+    loadBoardFromFile(player2File, player2Board);
+
+    player1File.close();
+    player2File.close();
+
+    std::cout << "Игровые поля загружены из файлов 'player1_board.txt' и 'player2_board.txt'.\n";
+
+    // Дальнейшая логика игры...
+
+    return 0;
+}
